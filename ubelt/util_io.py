@@ -26,7 +26,7 @@ def writeto(fpath, to_write, aslines=False, mode='w', verbose=None):
         >>> dpath = ub.ensure_app_cache_dir('ubelt')
         >>> fpath = dpath + '/' + 'testwrite.txt'
         >>> if exists(fpath):
-        >>>     os.remove(fpath)
+        ...     os.remove(fpath)
         >>> to_write = 'utf-8 symbols Δ, Й, ק, م, ๗, あ, 叶, 葉, and 말.'
         >>> writeto(fpath, to_write)
         >>> read_ = ub.readfrom(fpath)
@@ -40,7 +40,7 @@ def writeto(fpath, to_write, aslines=False, mode='w', verbose=None):
         >>> dpath = ub.ensure_app_cache_dir('ubelt')
         >>> fpath = dpath + '/' + 'testwrite2.txt'
         >>> if exists(fpath):
-        >>>     os.remove(fpath)
+        ...     os.remove(fpath)
         >>> to_write = ['a\n', 'b\n', 'c\n', 'd\n']
         >>> writeto(fpath, to_write, aslines=True)
         >>> read_ = ub.readfrom(fpath, aslines=True)
@@ -134,7 +134,7 @@ def delete(path, verbose=False):
         >>> from os.path import join, exists
         >>> base = ub.ensure_app_cache_dir('ubelt', 'delete_test')
         >>> dpath1 = ub.ensuredir(join(base, 'dir'))
-        >>> ub.ensuredir(join(base, 'dir', 'subdir'))
+        >>> _ = ub.ensuredir(join(base, 'dir', 'subdir'))
         >>> ub.touch(join(base, 'dir', 'to_remove1.txt'))
         >>> fpath1 = join(base, 'dir', 'subdir', 'to_remove3.txt')
         >>> fpath2 = join(base, 'dir', 'subdir', 'to_remove2.txt')

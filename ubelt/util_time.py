@@ -18,8 +18,9 @@ class Timer(object):
         >>> import ubelt as ub
         >>> timer = ub.Timer('Timer test!', verbose=1)
         >>> with timer:
-        >>>     prime = ub.find_nth_prime(40)
+        ...     prime = ub.find_nth_prime(40)
         >>> assert timer.ellapsed > 0
+        ...
     """
     DEFAULT_VERBOSE = True
 
@@ -85,10 +86,11 @@ class Timerit(object):
         >>> num = 15
         >>> t1 = ub.Timerit(num, verbose=2)
         >>> for timer in t1:
-        >>>     # <write untimed setup code here> this example has no setup
-        >>>     with timer:
-        >>>         # <write code to time here> for example...
-        >>>         ub.find_nth_prime(100)
+        ...     # <write untimed setup code here> this example has no setup
+        ...     with timer:
+        ...         # <write code to time here> for example...
+        ...         ub.find_nth_prime(100)
+        ...
         >>> # <you can now access Timerit attributes>
         >>> print('t1.total_time = %r' % (t1.total_time,))
         >>> assert t1.total_time > 0
@@ -102,11 +104,13 @@ class Timerit(object):
         >>> # If the timer object is unused, time will still be recoreded,
         >>> # but with less precision.
         >>> for _ in ub.Timerit(num, 'inprecise'):
-        >>>     ub.find_nth_prime(n)
+        ...     ub.find_nth_prime(n)
+        ...
         >>> # Using the timer object results in the most precise timeings
         >>> for timer in ub.Timerit(num, 'precise'):
-        >>>     with timer:
-        >>>         ub.find_nth_prime(n)
+        ...     with timer:
+        ...         ub.find_nth_prime(n)
+        ...
     """
     DEFAULT_VERBOSE = True
 
@@ -129,6 +133,7 @@ class Timerit(object):
             >>> import ubelt as ub
             >>> ave_sec = ub.Timerit(num=10, verbose=0).call(ub.find_nth_prime, 50)
             >>> assert ave_sec > 0
+            ...
         """
         for timer in self:
             with timer:

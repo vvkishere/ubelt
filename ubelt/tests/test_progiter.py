@@ -26,8 +26,8 @@ def test_progiter():
         stream.seek(0)
         print(stream.read())
 
-    length = 1000
-    N = 50000
+    length = 100
+    N = 500
     N0 = N - length
     print('N = %r' % (N,))
     print('N0 = %r' % (N0,))
@@ -76,93 +76,93 @@ def test_progiter():
         list(piterable)
 
 
-def time_progiter_overhead():
-    # Time the overhead of this function
-    import timeit
-    import textwrap
-    import ubelt as ub
-    setup = textwrap.dedent(
-        '''
-        from sklearn.externals.progiter import ProgIter
-        import numpy as np
-        import time
-        from six.moves import cStringIO, range
-        import utool as ut
-        N = 500
-        stream = cStringIO()
-        rng = np.random.RandomState(42)
-        ndims = 2
-        vec1 = rng.rand(113, ndims)
-        vec2 = rng.rand(71, ndims)
+# def time_progiter_overhead():
+#     # Time the overhead of this function
+#     import timeit
+#     import textwrap
+#     import ubelt as ub
+#     setup = textwrap.dedent(
+#         '''
+#         from sklearn.externals.progiter import ProgIter
+#         import numpy as np
+#         import time
+#         from six.moves import cStringIO, range
+#         import utool as ut
+#         N = 500
+#         stream = cStringIO()
+#         rng = np.random.RandomState(42)
+#         ndims = 2
+#         vec1 = rng.rand(113, ndims)
+#         vec2 = rng.rand(71, ndims)
 
-        def minimal_wraper1(iterable):
-            for item in iterable:
-                yield item
+#         def minimal_wraper1(iterable):
+#             for item in iterable:
+#                 yield item
 
-        def minimal_wraper2(iterable):
-            for count, item in enumerate(iterable, start=1):
-                yield item
+#         def minimal_wraper2(iterable):
+#             for count, item in enumerate(iterable, start=1):
+#                 yield item
 
-        def minimal_wraper3(iterable):
-            count = 0
-            for item in iterable:
-                yield item
-                count += 1
+#         def minimal_wraper3(iterable):
+#             count = 0
+#             for item in iterable:
+#                 yield item
+#                 count += 1
 
-        def minwrap4(iterable):
-            for count, item in enumerate(iterable, start=1):
-                yield item
-                if count % 100:
-                    pass
+#         def minwrap4(iterable):
+#             for count, item in enumerate(iterable, start=1):
+#                 yield item
+#                 if count % 100:
+#                     pass
 
-        def minwrap5(iterable):
-            for count, item in enumerate(iterable, start=1):
-                yield item
-                if time.time() < 100:
-                    pass
-        '''
-    )
-    statements = {
-        'baseline'       : '[{work} for n in range(N)]',
-        'creation'       : 'ProgIter(range(N))',
-        'minwrap1'       : '[{work} for n in minimal_wraper1(range(N))]',
-        'minwrap2'       : '[{work} for n in minimal_wraper2(range(N))]',
-        'minwrap3'       : '[{work} for n in minimal_wraper3(range(N))]',
-        'minwrap4'       : '[{work} for n in minwrap4(range(N))]',
-        'minwrap5'       : '[{work} for n in minwrap5(range(N))]',
-        '(sk-disabled)'  : '[{work} for n in ProgIter(range(N), enabled=False, stream=stream)]',  # NOQA
-        '(sk-plain)'     : '[{work} for n in ProgIter(range(N), stream=stream)]',  # NOQA
-        '(sk-freq)'      : '[{work} for n in ProgIter(range(N), stream=stream, freq=100)]',  # NOQA
-        '(sk-no-adjust)' : '[{work} for n in ProgIter(range(N), stream=stream, adjust=False, freq=200)]',  # NOQA
-        '(sk-high-freq)' : '[{work} for n in ProgIter(range(N), stream=stream, adjust=False, freq=200)]',  # NOQA
+#         def minwrap5(iterable):
+#             for count, item in enumerate(iterable, start=1):
+#                 yield item
+#                 if time.time() < 100:
+#                     pass
+#         '''
+#     )
+#     statements = {
+#         'baseline'       : '[{work} for n in range(N)]',
+#         'creation'       : 'ProgIter(range(N))',
+#         'minwrap1'       : '[{work} for n in minimal_wraper1(range(N))]',
+#         'minwrap2'       : '[{work} for n in minimal_wraper2(range(N))]',
+#         'minwrap3'       : '[{work} for n in minimal_wraper3(range(N))]',
+#         'minwrap4'       : '[{work} for n in minwrap4(range(N))]',
+#         'minwrap5'       : '[{work} for n in minwrap5(range(N))]',
+#         '(sk-disabled)'  : '[{work} for n in ProgIter(range(N), enabled=False, stream=stream)]',  # NOQA
+#         '(sk-plain)'     : '[{work} for n in ProgIter(range(N), stream=stream)]',  # NOQA
+#         '(sk-freq)'      : '[{work} for n in ProgIter(range(N), stream=stream, freq=100)]',  # NOQA
+#         '(sk-no-adjust)' : '[{work} for n in ProgIter(range(N), stream=stream, adjust=False, freq=200)]',  # NOQA
+#         '(sk-high-freq)' : '[{work} for n in ProgIter(range(N), stream=stream, adjust=False, freq=200)]',  # NOQA
 
-        # '(ut-disabled)'  : '[{work} for n in ut.ProgIter(range(N), enabled=False, stream=stream)]',    # NOQA
-        # '(ut-plain)'     : '[{work} for n in ut.ProgIter(range(N), stream=stream)]',  # NOQA
-        # '(ut-freq)'      : '[{work} for n in ut.ProgIter(range(N), freq=100, stream=stream)]',  # NOQA
-        # '(ut-no-adjust)' : '[{work} for n in ut.ProgIter(range(N), freq=200, adjust=False, stream=stream)]',  # NOQA
-        # '(ut-high-freq)' : '[{work} for n in ut.ProgIter(range(N), stream=stream, adjust=False, freq=200)]',  # NOQA
-    }
-    # statements = {
-    #     'calc_baseline': '[vec1.dot(vec2.T) for n in range(M)]',  # NOQA
-    #     'calc_plain': '[vec1.dot(vec2.T) for n in ProgIter(range(M), stream=stream)]',  # NOQA
-    #     'calc_plain_ut': '[vec1.dot(vec2.T) for n in ut.ProgIter(range(M), stream=stream)]',  # NOQA
-    # }
-    timeings = {}
+#         # '(ut-disabled)'  : '[{work} for n in ut.ProgIter(range(N), enabled=False, stream=stream)]',    # NOQA
+#         # '(ut-plain)'     : '[{work} for n in ut.ProgIter(range(N), stream=stream)]',  # NOQA
+#         # '(ut-freq)'      : '[{work} for n in ut.ProgIter(range(N), freq=100, stream=stream)]',  # NOQA
+#         # '(ut-no-adjust)' : '[{work} for n in ut.ProgIter(range(N), freq=200, adjust=False, stream=stream)]',  # NOQA
+#         # '(ut-high-freq)' : '[{work} for n in ut.ProgIter(range(N), stream=stream, adjust=False, freq=200)]',  # NOQA
+#     }
+#     # statements = {
+#     #     'calc_baseline': '[vec1.dot(vec2.T) for n in range(M)]',  # NOQA
+#     #     'calc_plain': '[vec1.dot(vec2.T) for n in ProgIter(range(M), stream=stream)]',  # NOQA
+#     #     'calc_plain_ut': '[vec1.dot(vec2.T) for n in ut.ProgIter(range(M), stream=stream)]',  # NOQA
+#     # }
+#     timeings = {}
 
-    work_strs = [
-        'None',
-        'vec1.dot(vec2.T)',
-        'n % 10 == 0',
-    ]
-    work = work_strs[0]
-    # work = work_strs[1]
+#     work_strs = [
+#         'None',
+#         'vec1.dot(vec2.T)',
+#         'n % 10 == 0',
+#     ]
+#     work = work_strs[0]
+#     # work = work_strs[1]
 
-    number = 10000
-    prog = ub.ProgIter(label='timing', adjust=True)
-    for key, stmt in prog(statements.items()):
-        prog.set_extra(key)
-        secs = timeit.timeit(stmt.format(work=work), setup, number=number)
-        timeings[key] = secs / number
+#     number = 10000
+#     prog = ub.ProgIter(label='timing', adjust=True)
+#     for key, stmt in prog(statements.items()):
+#         prog.set_extra(key)
+#         secs = timeit.timeit(stmt.format(work=work), setup, number=number)
+#         timeings[key] = secs / number
 
-    # import utool as ut
-    # print(ut.align(ut.repr4(timeings, precision=8), ':'))
+#     # import utool as ut
+#     # print(ut.align(ut.repr4(timeings, precision=8), ':'))

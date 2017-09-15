@@ -126,6 +126,8 @@ def parse_google_retblock(lines, return_annot=None):
         ...     'Tuple[int, str]',
         ... ])))
         >>> assert len(hints) == 0
+        ...
+
     """
     if return_annot is not None:
         # If the function has a return type annotation then the return block

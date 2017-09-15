@@ -13,7 +13,6 @@ TODO:
     * inject_func_as_method
     * inject_func_as_property
     * embed
-    * repr2
     * identity
     * rsync
     * grab_file_url
@@ -26,7 +25,7 @@ TODO:
 from __future__ import absolute_import, division, print_function, unicode_literals
 import sys
 
-__version__ = '0.0.33'
+__version__ = '0.0.35'
 
 GLOBAL_MODULES = [
     'util_arg',
@@ -39,6 +38,7 @@ GLOBAL_MODULES = [
     'util_list',
     'util_mixins',
     'util_path',
+    'util_hash',
     'util_platform',
     'util_stress',
     'util_str',
@@ -74,6 +74,7 @@ if _DOELSE:
     from ubelt import util_list
     from ubelt import util_mixins
     from ubelt import util_path
+    from ubelt import util_hash
     from ubelt import util_platform
     from ubelt import util_stress
     from ubelt import util_str
@@ -96,23 +97,27 @@ if _DOELSE:
                                  take, unique, unique_flags,)
     from ubelt.util_mixins import (NiceRepr,)
     from ubelt.util_path import (augpath, split,)
-    from ubelt.util_platform import (DARWIN, LINUX, PY2, PY3, WIN32, cmd, editfile,
-                                     ensure_app_cache_dir, ensure_app_resource_dir,
-                                     ensuredir, get_app_cache_dir,
-                                     get_app_resource_dir, platform_cache_dir,
-                                     platform_resource_dir, startfile,)
+    from ubelt.util_hash import (hash_data,)
+    from ubelt.util_platform import (DARWIN, LINUX, PY2, PY3, WIN32, cmd,
+                                     compressuser, editfile, ensure_app_cache_dir,
+                                     ensure_app_resource_dir, ensuredir,
+                                     get_app_cache_dir, get_app_resource_dir,
+                                     platform_cache_dir, platform_resource_dir,
+                                     startfile, userhome,)
     from ubelt.util_stress import (find_nth_prime,)
     from ubelt.util_str import (CaptureStdout, cStringIO, codeblock,
                                 ensure_unicode, hzcat, indent,)
-    from ubelt.util_test import (DocExample, ExitTestException, doctest_package,
-                                 parse_docstr_examples, parse_src_want,
-                                 parse_testables,)
+    from ubelt.util_test import (CoverageContext, DocTest, ExitTestException,
+                                 Harness, UnitTest, doctest_package,
+                                 package_calldefs, parse_docstr_examples,
+                                 parse_doctestables, parse_src_want,
+                                 parse_unittestables,)
     from ubelt.util_format import (FormatFuncs, Formatters, dict_itemstrs,
                                    format_dict, format_list, format_object,
                                    join_itemstrs, list_itemstrs, repr2,)
     from ubelt.util_time import (Timer, Timerit, timestamp,)
     from ubelt.progiter import (ProgIter,)
-    
+
     # </AUTOGEN_INIT>
 
 del _DOELSE

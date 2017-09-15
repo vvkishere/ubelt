@@ -126,7 +126,7 @@ def take(items, indices):
         >>> import ubelt as ub
         >>> items = [0, 1, 2, 3]
         >>> indices = [2, 0]
-        >>> list(ub.take(items, indices))
+        >>> print(list(ub.take(items, indices)))
         [2, 0]
     """
     return (items[index] for index in indices)
@@ -148,7 +148,7 @@ def compress(items, flags):
         >>> import ubelt as ub
         >>> items = [1, 2, 3, 4, 5]
         >>> flags = [False, True, True, False, True]
-        >>> list(ub.compress(items, flags))
+        >>> print(list(ub.compress(items, flags)))
         [2, 3, 5]
     """
     return it.compress(items, flags)
@@ -165,7 +165,7 @@ def flatten(nested_list):
     Example:
         >>> import ubelt as ub
         >>> nested_list = [['a', 'b'], ['c', 'd']]
-        >>> list(ub.flatten(nested_list))
+        >>> print(list(ub.flatten(nested_list)))
         ['a', 'b', 'c', 'd']
     """
     return it.chain.from_iterable(nested_list)

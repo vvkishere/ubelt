@@ -23,7 +23,7 @@ class CaptureStdout(object):
         >>> self = CaptureStdout(enabled=True)
         >>> print('dont capture the table flip (╯°□°）╯︵ ┻━┻')
         >>> with self:
-        >>>     print('capture the heart ♥')
+        ...     print('capture the heart ♥')
         >>> print('dont capture look of disapproval ಠ_ಠ')
         >>> assert isinstance(self.text, six.text_type)
         >>> assert self.text == 'capture the heart ♥\n', 'failed capture text'
@@ -103,15 +103,15 @@ def codeblock(block_str):
         >>> from ubelt.util_str import *  # NOQA
         >>> # Simulate an indented part of code
         >>> if True:
-        >>>     # notice the indentation on this will be normal
-        >>>     codeblock_version = codeblock(
+        ...     # notice the indentation on this will be normal
+        ...     codeblock_version = codeblock(
         ...             '''
         ...             def foo():
         ...                 return 'bar'
         ...             '''
         ...         )
-        >>>     # notice the indentation and newlines on this will be odd
-        >>>     normal_version = ('''
+        ...     # notice the indentation and newlines on this will be odd
+        ...     normal_version = ('''
         ...         def foo():
         ...             return 'bar'
         ...     ''')
@@ -144,8 +144,8 @@ def hzcat(args, sep=''):
         >>> C = ub.repr2([[5, 6], [7, 8]], nl=1, cbr=True, trailsep=False)
         >>> args = ['A = ', B, ' * ', C]
         >>> print(ub.hzcat(args))
-        A = [[1, 2], * [[5, 6],
-             [3, 4]]    [7, 8]]
+        A = [[1, 2],   * [[5, 6],
+             [3, 457]]    [7, 8]]
 
     Example2:
         >>> from ubelt.util_str import *

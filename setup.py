@@ -13,7 +13,7 @@ Pypi:
      pip install twine
 
      # First tag the source-code
-     VERSION=$(python -c "import setup; print(setup.version)")
+     VERSION=$(python -c "import setup; print(setup.parse_version)")
      echo $VERSION
      git tag $VERSION -m "tarball tag $VERSION"
      git push --tags origin master
@@ -109,10 +109,10 @@ if __name__ == '__main__':
     setup(
         name='ubelt',
         version=version,
-        author='Jon Crall',
         description='A "utility belt" of commonly needed utility and helper functions',
         long_description=parse_description(),
         install_requires=parse_requirements(),
+        author='Jon Crall',
         author_email='erotemic@gmail.com',
         url='https://github.com/Erotemic/ubelt',
         license='Apache 2',

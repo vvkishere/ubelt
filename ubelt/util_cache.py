@@ -49,13 +49,13 @@ class Cacher(object):
         >>> cacher.clear()
         >>> data = cacher.tryload()
         >>> if data is None:
-        >>>     # Put expensive functions in if block when cacher misses
-        >>>     myvar1 = 'result of expensive process'
-        >>>     myvar2 = 'another result'
-        >>>     # Tell the cacher to write at the end of the if block
-        >>>     # It is idomatic to put results in a tuple named data
-        >>>     data = myvar1, myvar2
-        >>>     cacher.save(data)
+        ...     # Put expensive functions in if block when cacher misses
+        ...     myvar1 = 'result of expensive process'
+        ...     myvar2 = 'another result'
+        ...     # Tell the cacher to write at the end of the if block
+        ...     # It is idomatic to put results in a tuple named data
+        ...     data = myvar1, myvar2
+        ...     cacher.save(data)
         >>> # Last part of the Cacher pattern is to unpack the data tuple
         >>> myvar1, myvar2 = data
 
@@ -67,8 +67,8 @@ class Cacher(object):
         >>> cacher = Cacher('test_process', cfgstr)
         >>> myvar = cacher.tryload()
         >>> if myvar is None:
-        >>>     myvar = ('result of expensive process', 'another result')
-        >>>     cacher.save(myvar)
+        ...     myvar = ('result of expensive process', 'another result')
+        ...     cacher.save(myvar)
         >>> assert cacher.exists(), 'should now exist'
     """
     def __init__(self, fname, cfgstr=None, dpath=None, appname='ubelt',
@@ -318,7 +318,7 @@ class Cacher(object):
         Example:
             >>> from ubelt.util_cache import *  # NOQA
             >>> def func():
-            >>>     return 'expensive result'
+            ...     return 'expensive result'
             >>> fname = 'test_cacher_ensure'
             >>> cfgstr = 'func params'
             >>> cacher = Cacher(fname, cfgstr)

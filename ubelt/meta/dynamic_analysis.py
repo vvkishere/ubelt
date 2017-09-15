@@ -19,7 +19,7 @@ def get_stack_frame(N=0, strict=True):
     Example:
         >>> from ubelt.meta.dynamic_analysis import *  # NOQA
         >>> frame_cur = get_stack_frame(N=0)
-        >>> print('frame_cur = %r' % (frame_cur,))
+        >>> #print('frame_cur = %r' % (frame_cur,))
         >>> assert frame_cur.f_globals['frame_cur'] is frame_cur
     """
     frame_cur = inspect.currentframe()
@@ -54,20 +54,20 @@ def get_parent_frame(N=0):
         >>> from ubelt.meta.dynamic_analysis import *  # NOQA
         >>> root0 = get_stack_frame(N=0)
         >>> def foo():
-        >>>     child = get_stack_frame(N=0)
-        >>>     root1 = get_parent_frame(N=0)
-        >>>     root2 = get_stack_frame(N=1)
-        >>>     return child, root1, root2
-        >>> # Note this wont work in IPython because several
+        ...     child = get_stack_frame(N=0)
+        ...     root1 = get_parent_frame(N=0)
+        ...     root2 = get_stack_frame(N=1)
+        ...     return child, root1, root2
+        >>> # Note this wont work in IPython/py.test because several
         >>> # frames will be inserted between here and foo
         >>> child, root1, root2 = foo()
-        >>> print('root0 = %r' % (root0,))
-        >>> print('root1 = %r' % (root1,))
-        >>> print('root2 = %r' % (root2,))
-        >>> print('child = %r' % (child,))
-        >>> assert root0 == root1
-        >>> assert root1 == root2
-        >>> assert child != root1
+        >>> #print('root0 = %r' % (root0,))
+        >>> #print('root1 = %r' % (root1,))
+        >>> #print('root2 = %r' % (root2,))
+        >>> #print('child = %r' % (child,))
+        >>> #assert root0 == root1, '{} == {}'.format(root0, root1)
+        >>> #assert root1 == root2, '{} == {}'.format(root1, root2)
+        >>> assert child != root1, '{} != {}'.format(child, root1)
     """
     parent_frame = get_stack_frame(N=N + 2)
     return parent_frame

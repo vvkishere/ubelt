@@ -103,6 +103,7 @@ class ProgIter(object):
         >>> for n in ub.ProgIter(range(100), verbose=2):
         >>>     # do some work
         >>>     is_prime(n)
+
         10000/10000... rate=13294.94 Hz, eta=0:00:00, total=0:00:00, wall=13:34 EST
     """
     def __init__(self, iterable=None, label=None, length=None, freq=1,
@@ -174,7 +175,8 @@ class ProgIter(object):
             >>> import ubelt as ub
             >>> prog = ub.ProgIter(range(100, 300, 100), show_times=False, verbose=3)
             >>> for n in prog:
-            >>>     prog.set_extra('processesing num {}'.format(n))
+            ...     prog.set_extra('processesing num {}'.format(n))
+
              0/2...
              1/2...  processesing num 100
              2/2...  processesing num 200
@@ -367,6 +369,7 @@ class ProgIter(object):
             >>> prog = ub.ProgIter(sequence, label='unknown seq', show_times=False, verbose=1)
             >>> for n in prog:
             ...     pass
+
             unknown seq   10/?...
         """
         tzname = time.tzname[0]
@@ -385,7 +388,7 @@ class ProgIter(object):
         if self.show_times:
             msg_body += [
                     ('rate={rate:4.2f} Hz,'),
-                    ('' if self.length else ' eta={eta},'),
+                    (' eta={eta},' if self.length else ''),
                     (' total={total},'),
                     (' wall={wall} ' + tzname),
             ]
@@ -429,17 +432,19 @@ class ProgIter(object):
             >>> prog = ub.ProgIter(range(4), show_times=False, verbose=1)
             >>> for n in prog:
             ...     print('unsafe message')
-                 0/4...  unsafe message
-                 1/4...  unsafe message
-                unsafe message
-                unsafe message
-                 4/4...
             >>> # apparently the safe version does this too.
             >>> print('---')
             >>> prog = ub.ProgIter(range(4), show_times=False, verbose=1)
             >>> for n in prog:
             ...     prog.ensure_newline()
             ...     print('safe message')
+
+                 0/4...  unsafe message
+                 1/4...  unsafe message
+                unsafe message
+                unsafe message
+                 4/4...
+            ----
                  0/4...
                 safe message
                  1/4...

@@ -56,6 +56,7 @@ def repr2(val, **kwargs):
         >>> result = repr2(dict_, nl=3, sort=True); print(result)
         >>> result = repr2(dict_, nl=3, sort=False, trailing_sep=False); print(result)
         >>> result = repr2(dict_, nl=3, sort=False, trailing_sep=False, nobr=True); print(result)
+        ...
 
     Example:
         >>> from ubelt.util_format import *
@@ -66,8 +67,9 @@ def repr2(val, **kwargs):
         ...         return {'n{}'.format(d): _nest(d - 1, w + 1), 'm{}'.format(d): _nest(d - 1, w + 1)}
         >>> dict_ = _nest(d=4, w=1)
         >>> result = repr2(dict_, nl=6, precision=2, cbr=1)
-        >>> print('---')
+        >>> #print('---')
         >>> print(result)
+        ...
     """
     if isinstance(val, dict):
         return format_dict(val, **kwargs)
@@ -415,7 +417,7 @@ def _rectify_countdown_or_bool(count_or_bool):
         >>> a8 = (_rectify_countdown_or_bool(None))
         >>> result = [a1, a2, a3, a4, a5, a6, a7, a8]
         >>> print(result)
-        [1.0, 0.0, 0, 0.0, -1.0, True, False, None]
+        [1, 0, 0, 0, -1, True, False, False]
     """
     if count_or_bool is True or count_or_bool is False:
         count_or_bool_ = count_or_bool

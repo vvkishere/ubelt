@@ -91,8 +91,7 @@ def group_items(item_list, groupid_list, sorted_=True):
         >>> groupid_list = ['protein', 'fruit', 'protein',  'protein', 'dairy',  'fruit']
         >>> result = ub.group_items(item_list, groupid_list)
         >>> #result = ub.repr2(groupid_to_items, nl=False, strvals=False)
-        >>> print(result)
-        {'dairy': ['cheese'], 'fruit': ['jam', 'bannana'], 'protein': ['ham', 'spam', 'eggs']}
+        >>> assert result == {'dairy': ['cheese'], 'fruit': ['jam', 'bannana'], 'protein': ['ham', 'spam', 'eggs']}
     """
     pair_list_ = zip(groupid_list, item_list)
     if sorted_:
@@ -147,11 +146,11 @@ def dict_hist(item_list, weight_list=None, ordered=False, labels=None):
         >>> hist1 = ub.dict_hist(item_list)
         >>> hist2 = ub.dict_hist(item_list, ordered=True)
         >>> try:
-        >>>     hist3 = ub.dict_hist(item_list, labels=[])
-        >>> except KeyError:
-        >>>     pass
-        >>> else:
-        >>>     raise AssertionError('expected key error')
+        ...     hist3 = ub.dict_hist(item_list, labels=[])
+        ... except KeyError:
+        ...     pass
+        ... else:
+        ...     raise AssertionError('expected key error')
         >>> #result = ub.repr2(hist_)
         >>> print(hist1)
         >>> weight_list = [1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1]
@@ -234,7 +233,7 @@ def dict_subset(dict_, keys, default=util_const.NoParam):
         >>> keys = ['K', 'dcvs_clip_max']
         >>> subdict_ = ub.dict_subset(dict_, keys)
         >>> #result = ub.repr2(subdict_, sorted_=True, newlines=False)
-        >>> print(subdict_)
+        >>> print(ub.repr2(subdict_, nl=0))
         {'K': 3, 'dcvs_clip_max': 0.2}
     """
     items = dict_take(dict_, keys, default)
@@ -266,10 +265,10 @@ def dict_take(dict_, keys, default=util_const.NoParam):
         >>> dict_ = {1: 'a', 2: 'b', 3: 'c'}
         >>> keys = [1, 2, 3, 4, 5]
         >>> try:
-        >>>     print(list(ub.dict_take(dict_, keys)))
-        >>>     raise AssertionError('did not get key error')
-        >>> except KeyError:
-        >>>     print('correctly got key error')
+        ...     print(list(ub.dict_take(dict_, keys)))
+        ...     raise AssertionError('did not get key error')
+        ... except KeyError:
+        ...     print('correctly got key error')
     """
     if default is util_const.NoParam:
         for key in keys:

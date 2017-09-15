@@ -84,10 +84,10 @@ def as_smart_type(var, data_type):
         object:
 
     CommandLine:
-        python -m utool.util_type --exec-as_smart_type
+        python -m ubelt.util_type --exec-as_smart_type
 
     Example:
-        >>> from utool.util_type import *  # NOQA
+        >>> from ubelt.util_smartcast import *  # NOQA
         >>> assert as_smart_type('1', None) == '1'
         >>> assert as_smart_type('1', int) == 1
         >>> assert as_smart_type('(1,3)', 'eval') == (1, 3)
@@ -115,6 +115,8 @@ def as_smart_type(var, data_type):
                 return _smartcast_slice(var)
             if data_type in [int, float, complex, eval]:
                 return data_type(var)
+            # TODO:
+            #    use parse_nestings to smartcast lists/tuples/sets
             else:
                 raise NotImplementedError(
                     'Cannot smart parse type={}'.format(data_type))
@@ -140,31 +142,40 @@ def _smartcast_bool(var):
         raise TypeError('string does not represent boolean')
 
 
-def parse_nestings2(string, nesters=['()', '[]', '<>', "''", '""'], escape='\\'):
+def parse_nestings(string, nesters=['()', '[]', '{}', '<>', "''", '""'], escape='\\'):
     r"""
+    Recursively partitions strings into nested or quoted expressions.
+
+    By default four types of nesters (paren, brak, curly, and angle) are
+    recognied along with double and single quotes. Different nesters can be
+    specified for custom uses.
+
+    SeeAlso:
+        recombine_nestings - takes the result of this function
+
+    Returns:
+        list: an abstract syntax tree represented as a list of lists
+
     References:
         http://stackoverflow.com/questions/4801403/pyparsing-nested-mutiple-opener-clo
 
     Example:
-        >>> from utool.util_gridsearch import *  # NOQA
-        >>> import utool as ut
-        >>> string = r'lambda u: sign(u) * abs(u)**3.0 * greater(u, 0)'
-        >>> parsed_blocks = parse_nestings2(string)
-        >>> print('parsed_blocks = {!r}'.format(parsed_blocks))
+        >>> from ubelt.util_smartcast import *  # NOQA
+        >>> import ubelt as ub
         >>> string = r'lambda u: sign("\"u(\'fdfds\')") * abs(u)**3.0 * greater(u, 0)'
-        >>> parsed_blocks = parse_nestings2(string)
-        >>> print('parsed_blocks = {!r}'.format(parsed_blocks))
-        >>> recombined = recombine_nestings(parsed_blocks)
-        >>> print('PARSED_BLOCKS = ' + ut.repr3(parsed_blocks, nl=1))
-        >>> print('recombined = %r' % (recombined,))
-        >>> print('orig       = %r' % (string,))
+        >>> parse_tree = parse_nestings(string)
+        >>> print('parse_tree = {}'.format(ub.repr2(parse_tree, nl=3, si=True)))
+        >>> assert recombine_nestings(parse_tree) == string
     """
     import pyparsing as pp
 
-    def as_tagged(parent, doctag=None):
+    def as_tagged_tree(parent, doctag=None):
         """Returns the parse results as XML. Tags are created for tokens and lists that have defined results names."""
-        namedItems = dict((v[1], k) for (k, vlist) in parent._ParseResults__tokdict.items()
-                          for v in vlist)
+        namedItems = dict(
+            (v[1], k)
+            for (k, vlist) in parent._ParseResults__tokdict.items()
+            for v in vlist
+        )
         # collapse out indents if formatting is not desired
         parentTag = None
         if doctag is not None:
@@ -178,9 +189,9 @@ def parse_nestings2(string, nesters=['()', '[]', '<>', "''", '""'], escape='\\')
         for i, res in enumerate(parent._ParseResults__toklist):
             if isinstance(res, pp.ParseResults):
                 if i in namedItems:
-                    child = as_tagged(res, namedItems[i])
+                    child = as_tagged_tree(res, namedItems[i])
                 else:
-                    child = as_tagged(res, None)
+                    child = as_tagged_tree(res, None)
                 out.append(child)
             else:
                 # individual token, see if there is a name for it
@@ -191,6 +202,7 @@ def parse_nestings2(string, nesters=['()', '[]', '<>', "''", '""'], escape='\\')
                     resTag = "ITEM"
                 child = (resTag, pp._ustr(res))
                 out += [child]
+        # return out
         return (parentTag, out)
 
     def combine_nested(opener, closer, content, name=None):
@@ -198,28 +210,20 @@ def parse_nestings2(string, nesters=['()', '[]', '<>', "''", '""'], escape='\\')
         opener, closer, content = '(', ')', nest_body
         """
         ret1 = pp.Forward()
-        # if opener == closer:
-        #     closer = pp.Regex('(?<!' + re.escape(closer) + ')')
-        # _NEST = ut.identity
-        #_NEST = pp.Suppress
-        # opener_ = _NEST(opener)
-        # closer_ = _NEST(closer)
-        opener_ = opener
-        closer_ = closer
-
-        group = pp.Group(opener_ + pp.ZeroOrMore(content) + closer_)
+        group = pp.Group(opener + pp.ZeroOrMore(content) + closer)
         ret2 = ret1 << group
-        if ret2 is None:
-            ret2 = ret1
-        else:
-            pass
-            #raise AssertionError('Weird pyparsing behavior. Comment this line if encountered. pp.__version__ = %r' % (pp.__version__,))
-        if name is None:
-            ret3 = ret2
-        else:
+        ret3 = ret2
+        if name is not None:
             ret3 = ret2.setResultsName(name)
-        assert ret3 is not None, 'cannot have a None return'
         return ret3
+
+    def regex_or(*patterns):
+        """ matches one of the patterns """
+        return '{}'.format('|'.join(patterns))
+
+    def nocapture(pat):
+        """ A non-capturing version of regular parentheses """
+        return '(?:{})'.format(pat)
 
     # Current Best Grammar
     nest_body = pp.Forward()
@@ -228,7 +232,17 @@ def parse_nestings2(string, nesters=['()', '[]', '<>', "''", '""'], escape='\\')
         if left == right:
             # Treat left==right nestings as quoted strings
             q = left
-            quotedString = pp.Group(q + pp.Regex(r'(?:[^{q}\n\r\\]|(?:{q}{q})|(?:\\(?:[^x]|x[0-9a-fA-F]+)))*'.format(q=q)) + q)
+            quote_pat_fmt = (nocapture(regex_or(
+                r'[^{quote}\n\r\\]',
+                nocapture('{quote}{quote}'),
+                nocapture(r'\\' + nocapture(regex_or(
+                    '[^x]',
+                    'x[0-9a-fA-F]+')
+                ))
+            )) + '*')
+            quote_pat_fmt = r'(?:[^{quote}\n\r\\]|(?:{quote}{quote})|(?:\\(?:[^x]|x[0-9a-fA-F]+)))*'
+            quote_pat = quote_pat_fmt.format(quote=q)
+            quotedString = pp.Group(q + pp.Regex(quote_pat) + q)
             nest_expr = quotedString.setResultsName('nest' + left + right)
         else:
             nest_expr = combine_nested(left, right, content=nest_body, name='nest' + left + right)
@@ -239,11 +253,11 @@ def parse_nestings2(string, nesters=['()', '[]', '<>', "''", '""'], escape='\\')
 
     nonBracePrintables = ''.join(c for c in pp.printables if c not in ''.join(nesters)) + ' '
     nonNested = pp.Word(nonBracePrintables).setResultsName('nonNested')
-    # nonNested = (pp.Word(nonBracePrintables) | pp.quotedString).setResultsName('nonNested')
     nonNested = nonNested.leaveWhitespace()
 
-    # if with_curl and not with_paren and not with_brak:
+    # The body might be a non-nested set of characters
     nest_body_input = nonNested
+    # Allow each type of nested expression to be present in the body
     for nest_expr in nest_expr_list:
         nest_body_input = nest_body_input | nest_expr
 
@@ -252,27 +266,21 @@ def parse_nestings2(string, nesters=['()', '[]', '<>', "''", '""'], escape='\\')
     nest_body = nest_body.leaveWhitespace()
     parser = pp.ZeroOrMore(nest_body)
 
-    debug_ = 0
-
     if len(string) > 0:
         tokens = parser.parseString(string)
-        import ubelt as ub
-        if debug_:
-            print('string = %r' % (string,))
-            print('tokens List: ' + ub.repr2(tokens.asList(), nl=1))
-            print('tokens XML: ' + tokens.asXML())
-        parsed_blocks = as_tagged(tokens)[1]
-        if debug_:
-            print('PARSED_BLOCKS = ' + ub.repr3(parsed_blocks, nl=1))
+        # parse_tree = tokens.asList()
+        parse_tree = as_tagged_tree(tokens)
     else:
-        parsed_blocks = []
-    return parsed_blocks
+        # parse_tree = []
+        parse_tree = ('nonNested', [])
+    return parse_tree
 
 
-def recombine_nestings(parsed_blocks):
-    if len(parsed_blocks) == 0:
-        return ''
-    values = [block[1] for block in parsed_blocks]
-    literals = [recombine_nestings(v) if isinstance(v, list) else v for v in values]
-    recombined = ''.join(literals)
+def recombine_nestings(parse_tree):
+    values = parse_tree[1]
+    if isinstance(values, list):
+        literals = map(recombine_nestings, values)
+        recombined = ''.join(literals)
+    else:
+        recombined = values
     return recombined
