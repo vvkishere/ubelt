@@ -309,6 +309,13 @@ def join_itemstrs(itemstrs, itemsep, newlines, nobraces, trailing_sep,
 
 
 def dict_itemstrs(dict_, **kwargs):
+    """
+    Example:
+        >>> from ubelt.util_format import *
+        >>> dict_ =  {'b': .01, 'l': 'st', 'g': 1.0, 's': 10, 'm': 0.9, 'w': .5}
+        >>> kwargs = {}
+        >>> dict_itemstrs(dict_, **kwargs)
+    """
     import ubelt as ub
     explicit = kwargs.get('explicit', False)
     kwargs['explicit'] = _rectify_countdown_or_bool(explicit)
@@ -352,7 +359,7 @@ def dict_itemstrs(dict_, **kwargs):
         # never sort ordered dicts; they are perfect just the way they are!
         sort = False
     if sort:
-        _sort_itemstrs(items, itemstrs)
+        itemstrs = _sort_itemstrs(items, itemstrs)
     return itemstrs
 
 
@@ -365,7 +372,7 @@ def list_itemstrs(list_, **kwargs):
         # Force orderings on sets.
         sort = isinstance(list_, (set, frozenset))
     if sort:
-        _sort_itemstrs(items, itemstrs)
+        itemstrs = _sort_itemstrs(items, itemstrs)
     return itemstrs
 
 

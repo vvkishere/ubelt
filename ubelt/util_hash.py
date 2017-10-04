@@ -101,7 +101,7 @@ def hash_data(data, hashlen=None, alphabet=None):
         # Get a 128 character hex string
         text = hasher.hexdigest()
         # Shorten length of string (by increasing base)
-        hashstr2 = _convert_hexstr_to_bigbase(text, alphabet, bigbase=len(alphabet))
+        hashstr2 = _convert_hexstr_to_bigbase(text, alphabet)
         # Truncate
         text = hashstr2[:hashlen]
         return text
@@ -216,7 +216,7 @@ def _covert_to_hashable(data):
     return prefix, hashable
 
 
-def _convert_hexstr_to_bigbase(hexstr, alphabet, bigbase):
+def _convert_hexstr_to_bigbase(hexstr, alphabet):
     r"""
     Packs a long hexstr into a shorter length string with a larger base
 
@@ -249,6 +249,7 @@ def _convert_hexstr_to_bigbase(hexstr, alphabet, bigbase):
         >>> info(27, 64)
         >>> info(27, 216)
     """
+    bigbase = len(alphabet)
     x = int(hexstr, 16)  # first convert to base 16
     if x == 0:
         return '0'
