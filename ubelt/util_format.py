@@ -312,9 +312,11 @@ def dict_itemstrs(dict_, **kwargs):
     """
     Example:
         >>> from ubelt.util_format import *
-        >>> dict_ =  {'b': .01, 'l': 'st', 'g': 1.0, 's': 10, 'm': 0.9, 'w': .5}
-        >>> kwargs = {}
-        >>> dict_itemstrs(dict_, **kwargs)
+        >>> dict_ =  {'b': .1, 'l': 'st', 'g': 1.0, 's': 10, 'm': 0.9, 'w': .5}
+        >>> kwargs = {'strkeys': True}
+        >>> itemstrs = dict_itemstrs(dict_, **kwargs)
+        >>> char_order = [p[0] for p in itemstrs]
+        >>> assert char_order == ['b', 'g', 'l', 'm', 's', 'w']
     """
     import ubelt as ub
     explicit = kwargs.get('explicit', False)
