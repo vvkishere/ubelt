@@ -458,7 +458,7 @@ def cmd(command, shell=False, detatch=False, verbose=0, verbout=None):
 
 
 def startfile(fpath, verbose=True):  # nocover
-    """
+    r"""
     Uses default program defined by the system to open a file.
 
     Args:
@@ -470,7 +470,6 @@ def startfile(fpath, verbose=True):  # nocover
         http://stackoverflow.com/questions/2692873/quote-posix
 
     DisableExample:
-        >>> # This test interacts with a GUI frontend, not sure how to test.
         >>> import ubelt as ub
         >>> base = ub.ensure_app_cache_dir('ubelt')  # doctest: +SKIP
         >>> fpath1 = join(base, 'test_open.txt')  # doctest: +SKIP
@@ -512,8 +511,6 @@ def editfile(fpath, verbose=True):  # nocover
         verbose (int): verbosity
 
     DisableExample:
-        >>> # TODO: it would be nice if doctest respected this docblock header.
-        >>> # This test interacts with a GUI frontend, not sure how to test.
         >>> import ubelt as ub
         >>> ub.editfile(ub.util_test.__file__)  # doctest: +SKIP
         >>> ub.editfile(ub)  # doctest: +SKIP

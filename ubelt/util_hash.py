@@ -224,7 +224,7 @@ def _convert_hexstr_to_bigbase(hexstr, alphabet):
         >>> from ubelt.util_hash import _ALPHABET_27
         >>> from ubelt.util_hash import _convert_hexstr_to_bigbase
         >>> newbase_str = _convert_hexstr_to_bigbase(
-        ...     'ffffffff', _ALPHABET_27, len(_ALPHABET_27))
+        ...     'ffffffff', _ALPHABET_27)
         >>> print(newbase_str)
         vxlrmxn
 
