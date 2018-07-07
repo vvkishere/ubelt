@@ -147,11 +147,14 @@ def download(url, fpath=None, hash_prefix=None, hasher='sha512',
 
         tmp.close()
         if hash_prefix:
-            digest = hasher.hexdigest()
-            if digest[:len(hash_prefix)] != hash_prefix:
+            got = hasher.hexdigest()
+            if got[:len(hash_prefix)] != hash_prefix:
+                if verbose:
+                    print('hash_prefix = {!r}'.format(hash_prefix))
+                    print('got = {!r}'.format(got))
                 raise RuntimeError(
                     'invalid hash value (expected "{}", got "{}")'.format(
-                        hash_prefix, digest))
+                        hash_prefix, got))
         shutil.move(tmp.name, fpath)
     finally:
         tmp.close()
