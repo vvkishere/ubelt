@@ -78,7 +78,7 @@ def download(url, fpath=None, hash_prefix=None, hasher='sha512',
         http://stackoverflow.com/questions/16694907/how-to-download-large-file-in-python-with-requests-py
 
     CommandLine:
-        xdoctest ubelt.util_download download:1
+        python -m xdoctest ubelt.util_download download:1
 
     Example:
         >>> # xdoctest: +REQUIRES(--network)
