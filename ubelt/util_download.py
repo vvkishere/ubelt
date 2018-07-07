@@ -92,8 +92,9 @@ def download(url, fpath=None, hash_prefix=None, hasher='sha512',
         >>> # xdoctest: +REQUIRES(--network)
         >>> url = 'http://i.imgur.com/rqwaDag.png'
         >>> fpath = download(url, hasher='sha1', hash_prefix='f79ea24571da6ddd2ba12e3d57b515249ecb8a35')
-        Downloading url='http://i.imgur.com/rqwaDag.png' to fpath='/home/joncrall/.cache/ubelt/rqwaDag.png'
-         1233/1233... rate=... Hz, eta=..., total=..., wall=...
+        Downloading url='http://i.imgur.com/rqwaDag.png' to fpath=...ubelt/rqwaDag.png
+        ...
+        ...1233/1233... rate=... Hz, eta=..., total=..., wall=...
 
     Example:
         >>> # xdoctest: +REQUIRES(--network)
