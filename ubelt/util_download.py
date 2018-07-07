@@ -5,6 +5,7 @@ Helpers for downloading data
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from os.path import basename, join, exists
+import six
 import os
 import shutil
 import tempfile
@@ -119,40 +120,47 @@ def download(url, fpath=None, hash_prefix=None, hasher='sha512',
     else:
         file_size = int(meta.get_all("Content-Length")[0])
 
+    if hash_prefix:
+        if isinstance(hasher, str):
+            if hasher == 'sha1':
+                hasher = hashlib.sha1()
+            elif hasher == 'sha512':
+                hasher = hashlib.sha512()
+            else:
+                raise KeyError(hasher)
+    if six.PY2:
+        _hasher_update = lambda unicode: unicode.encode('utf8')  # NOQA
+    else:
+        _hasher_update = hasher.update
+
     tmp = tempfile.NamedTemporaryFile(delete=False)
+
+    # possible optimization (have not tested or timed)
+    _tmp_write = tmp.write
+    _urldata_read = urldata.read
     try:
-        if hash_prefix:
-            if isinstance(hasher, str):
-                if hasher == 'sha1':
-                    hasher = hashlib.sha1()
-                elif hasher == 'sha512':
-                    hasher = hashlib.sha512()
-                else:
-                    raise KeyError(hasher)
         with Progress(total=file_size, disable=not verbose) as pbar:
+            _pbar_update = pbar.update
+            buffer = (None,)
             if hash_prefix:
-                while True:
-                    buffer = urldata.read(chunksize)
-                    if len(buffer) == 0:
-                        break
-                    tmp.write(buffer)
-                    hasher.update(buffer)
-                    pbar.update(len(buffer))
+                while len(buffer) > 0:
+                    buffer = _urldata_read(chunksize)
+                    _tmp_write(buffer)
+                    _hasher_update(buffer)
+                    _pbar_update(len(buffer))
             else:
                 # Same code as above, just without the hasher update.
                 # (tight loop optimization: remove in-loop conditional)
-                while True:
-                    buffer = urldata.read(chunksize)
-                    if len(buffer) == 0:
-                        break
-                    tmp.write(buffer)
-                    pbar.update(len(buffer))
+                buffer = (None,)
+                while len(buffer) > 0:
+                    buffer = _urldata_read(chunksize)
+                    _tmp_write(buffer)
+                    _pbar_update(len(buffer))
 
         tmp.close()
         if hash_prefix:
             got = hasher.hexdigest()
             if got[:len(hash_prefix)] != hash_prefix:
-                # if verbose:
                 print('hash_prefix = {!r}'.format(hash_prefix))
                 print('got = {!r}'.format(got))
                 raise RuntimeError(
