@@ -78,7 +78,7 @@ def download(url, fpath=None, hash_prefix=None, hasher='sha512',
         http://stackoverflow.com/questions/16694907/how-to-download-large-file-in-python-with-requests-py
 
     CommandLine:
-        python -m ubelt.util_download download:1
+        xdoctest ubelt.util_download download:1
 
     Example:
         >>> # xdoctest: +REQUIRES(--network)
@@ -134,8 +134,9 @@ def download(url, fpath=None, hash_prefix=None, hasher='sha512',
     # possible optimization (have not tested or timed)
     _tmp_write = tmp.write
     _urldata_read = urldata.read
-    _hasher_update = (hasher.update if not six.PY2
-                      else lambda buffer: buffer.encode('utf8'))  # NOQA
+    # _hasher_update = (lambda buffer: buffer.encode('utf8') if six.PY2 else)  # NOQA
+    #                   hasher.update)
+    _hasher_update = hasher.update
     try:
         with Progress(total=file_size, disable=not verbose) as pbar:
             _pbar_update = pbar.update
