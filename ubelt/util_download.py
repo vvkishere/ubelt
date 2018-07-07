@@ -121,7 +121,7 @@ def download(url, fpath=None, hash_prefix=None, hasher='sha512',
         file_size = int(meta.get_all("Content-Length")[0])
 
     if hash_prefix:
-        if isinstance(hasher, str):
+        if isinstance(hasher, six.string_types):
             if hasher == 'sha1':
                 hasher = hashlib.sha1()
             elif hasher == 'sha512':
