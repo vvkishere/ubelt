@@ -128,34 +128,35 @@ def download(url, fpath=None, hash_prefix=None, hasher='sha512',
                 hasher = hashlib.sha512()
             else:
                 raise KeyError(hasher)
-    if six.PY2:
-        _hasher_update = lambda unicode: unicode.encode('utf8')  # NOQA
-    else:
-        _hasher_update = hasher.update
 
     tmp = tempfile.NamedTemporaryFile(delete=False)
 
     # possible optimization (have not tested or timed)
     _tmp_write = tmp.write
     _urldata_read = urldata.read
+    _hasher_update = (hasher.update if not six.PY2
+                      else lambda buffer: buffer.encode('utf8'))  # NOQA
     try:
         with Progress(total=file_size, disable=not verbose) as pbar:
             _pbar_update = pbar.update
-            buffer = (None,)
-            if hash_prefix:
-                while len(buffer) > 0:
-                    buffer = _urldata_read(chunksize)
-                    _tmp_write(buffer)
-                    _hasher_update(buffer)
-                    _pbar_update(len(buffer))
-            else:
-                # Same code as above, just without the hasher update.
-                # (tight loop optimization: remove in-loop conditional)
-                buffer = (None,)
-                while len(buffer) > 0:
-                    buffer = _urldata_read(chunksize)
-                    _tmp_write(buffer)
-                    _pbar_update(len(buffer))
+
+            def _critical_loop():
+                # Initialize the buffer to a non-empty object
+                buffer = ' '
+                if hash_prefix:
+                    while buffer:
+                        buffer = _urldata_read(chunksize)
+                        _tmp_write(buffer)
+                        _hasher_update(buffer)
+                        _pbar_update(len(buffer))
+                else:
+                    # Same code as above, just without the hasher update.
+                    # (tight loop optimization: remove in-loop conditional)
+                    while buffer:
+                        buffer = _urldata_read(chunksize)
+                        _tmp_write(buffer)
+                        _pbar_update(len(buffer))
+            _critical_loop()
 
         tmp.close()
         if hash_prefix:
