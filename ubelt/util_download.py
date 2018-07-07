@@ -76,6 +76,9 @@ def download(url, fpath=None, hash_prefix=None, hasher='sha512',
         http://stackoverflow.com/questions/15644964/python-progress-bar-and-downloads
         http://stackoverflow.com/questions/16694907/how-to-download-large-file-in-python-with-requests-py
 
+    CommandLine:
+        python -m ubelt.util_download download:1
+
     Example:
         >>> # xdoctest: +REQUIRES(--network)
         >>> from ubelt.util_download import *  # NOQA
@@ -87,7 +90,7 @@ def download(url, fpath=None, hash_prefix=None, hasher='sha512',
     Example:
         >>> # xdoctest: +REQUIRES(--network)
         >>> url = 'http://i.imgur.com/rqwaDag.png'
-        >>> fpath = download(url, hash_prefix='f79ea24571da6ddd2ba12e3d57b515249ecb8a35')
+        >>> fpath = download(url, hasher='sha1', hash_prefix='f79ea24571da6ddd2ba12e3d57b515249ecb8a35')
         Downloading url='http://i.imgur.com/rqwaDag.png' to fpath='/home/joncrall/.cache/ubelt/rqwaDag.png'
          1233/1233... rate=... Hz, eta=..., total=..., wall=...
 
